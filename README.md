@@ -28,7 +28,7 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository:
 ```bash
 git clone https://github.com/ismartash/mini_ai_assistant.git
-cd your-repo-name
+cd mini_ai_assistant
 ```
 
 2. Install dependencies:
