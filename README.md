@@ -2,6 +2,8 @@
 
 A simple, elegant AI chat assistant powered by Google's Gemini AI. This application provides a clean interface for interacting with the Gemini AI model, complete with a modern UI, message copying functionality, and chat history management. Users can view, delete, and interact with their chat history.
 
+# check live demo
+https://mini-ai-assistant.onrender.com
 ## Features
 
 - 🤖 **Real-time AI responses** using Gemini Pro.
