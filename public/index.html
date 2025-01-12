@@ -3,234 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ashish's Mini AI Assistant</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            background-color: #4a90e2;
-            color: white;
-            padding: 20px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .chat-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .message {
-            max-width: 80%;
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 20px;
-            line-height: 1.4;
-            position: relative;
-        }
-        .user-message {
-            background-color: #e2f0ff;
-            color: #333;
-            align-self: flex-end;
-            margin-left: auto;
-        }
-        .ai-message {
-            background-color: #f0f0f0;
-            color: #333;
-            position: relative;
-            padding-right: 40px;
-        }
-        .copy-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .ai-message:hover .copy-button {
-            opacity: 1;
-        }
-        .copy-button:hover {
-            background-color: #3a7bc8;
-        }
-        .input-area {
-            display: flex;
-            padding: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-        #userInput {
-            flex-grow: 1;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            font-size: 16px;
-        }
-        .send-button {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin-left: 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .send-button:hover {
-            background-color: #3a7bc8;
-        }
-        pre {
-            background-color: #f6f8fa;
-            border-radius: 5px;
-            padding: 15px;
-            overflow-x: auto;
-            font-size: 14px;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
-        }
-        @media (max-width: 600px) {
-            .container {
-                height: 100vh;
-                border-radius: 0;
-            }
-            .header {
-                border-radius: 0;
-            }
-        }
-    </style>
+    <title>AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Ashish's Mini AI Assistant</h1>
+        <div class="sidebar">
+            <h2>Chat History</h2>
+            <div id="chat-history"></div>
         </div>
-        <div class="chat-container" id="chatContainer">
-            <div class="message ai-message">
-                Welcome to Ashish's Mini AI Assistant! How can I help you today?
-                <button class="copy-button" onclick="copyMessage(this)">Copy</button>
+        <div class="main-content">
+            <h1>AI Assistant</h1>
+            <div id="chat-container"></div>
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="Ask me anything..." required>
+                <button type="submit" id="submit-btn">Send</button>
+            </form>
+            <div id="loading" style="display: none;">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Type your message...">
-            <button class="send-button" onclick="sendMessage()">Send</button>
         </div>
     </div>
 
-    <script>
-        function sendMessage() {
-            const userInput = document.getElementById('userInput');
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            addMessageToChat('user', message);
-            userInput.value = '';
-
-            fetch('/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                addMessageToChat('ai', data.response);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
-            });
-        }
-
-        function addMessageToChat(sender, message) {
-            const chatContainer = document.getElementById('chatContainer');
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${sender}-message`;
-            
-            // Add the message content
-            const messageContent = formatMessage(message);
-            messageElement.innerHTML = messageContent;
-            
-            // Add copy button only for AI messages
-            if (sender === 'ai') {
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-button';
-                copyButton.textContent = 'Copy';
-                copyButton.onclick = function() { copyMessage(this); };
-                messageElement.appendChild(copyButton);
-            }
-            
-            chatContainer.appendChild(messageElement);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function formatMessage(message) {
-            let formattedMessage = message.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
-                return `<pre><code class="language-${language || 'plaintext'}">${escapeHtml(code.trim())}</code></pre>`;
-            });
-            return formattedMessage.replace(/\n/g, '<br>');
-        }
-
-        function escapeHtml(unsafe) {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function copyMessage(button) {
-            const messageElement = button.parentElement;
-            const textToCopy = messageElement.innerText.replace('Copy', '').trim();
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text:', err);
-            });
-        }
-
-        document.getElementById('userInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
